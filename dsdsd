@@ -1,0 +1,6 @@
+NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_NEXTAUTH_SECRET=didlaididjdialdidjdkfirjei2#23jdj23
+NEXT_PUBLIC_BACKEND_URL=https://api.waiverapp.in
+
+#admin@admin.com
+#admin123
