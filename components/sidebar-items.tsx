@@ -39,12 +39,17 @@ const SidebarItems = ({
   setIsOpen: (val: boolean) => void;
   session: Session;
 }) => {
-  let permissions: any = session?.user?.permissions || {};
+  let permissions: any = session?.user?.permissions;
 
   console.log({ permissions });
 
   const links = _links
-    .map((link) => (permissions[link.field] ? link : null))
+    .map((link) => {
+      if (!permissions || Object.keys(permissions).length === 0) {
+        return link; // Default to showing if permissions are undefined or empty
+      }
+      return permissions[link.field] ? link : null;
+    })
     .filter((link) => link !== null);
 
   const fullPathname = usePathname();
