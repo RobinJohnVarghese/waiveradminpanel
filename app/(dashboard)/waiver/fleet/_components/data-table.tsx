@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { CloudDownload } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/lib/utils/csv";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +38,12 @@ export function DataTable<TData, TValue>({
   searchKey,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
   const table = useReactTable({
     data,
     columns,
@@ -46,8 +53,24 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
+      pagination,
+    },
+    onPaginationChange: setPagination,
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 20,
+      },
     },
   });
+
+  const handleDownload = () => {
+    if (!data.length) return;
+    const dataToExport = table
+      .getFilteredRowModel()
+      .rows.map((row) => row.original);
+    exportToCSV(dataToExport, "fleet-waivers");
+  };
 
   return (
     <div>
@@ -59,7 +82,11 @@ export function DataTable<TData, TValue>({
           >
             Add New Fleet
           </Link>
-          <Button variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleDownload()}
+          >
             <CloudDownload className="mr-2 h-4 w-4" />
             Download
           </Button>

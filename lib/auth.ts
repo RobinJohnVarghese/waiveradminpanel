@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "@/env.mjs";
+import { Permission } from "@/types/next-auth";
 
 export const authOptions: NextAuthOptions = {
   secret: env.NEXTAUTH_SECRET,
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
             },
           })
             .then((response) => {
-              console.log('response', response);
+              console.log("response", response.data);
 
               return response.data;
             })
@@ -54,6 +55,8 @@ export const authOptions: NextAuthOptions = {
       session.refreshToken = token.refreshToken as string;
       if (session.user) {
         session.user.name = token.name;
+        session.user.id = token.userId as string;
+        session.user.permissions = token.permissions as Permission;
       }
       return session;
     },
@@ -63,6 +66,7 @@ export const authOptions: NextAuthOptions = {
         token.refreshToken = user.data.refresh_token;
         token.userId = user.data.id;
         token.name = user.data.fullname;
+        token.permissions = user.data.permissions;
       }
 
       return token;

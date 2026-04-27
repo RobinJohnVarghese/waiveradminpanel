@@ -52,6 +52,7 @@ import { Label } from "@/components/ui/label";
 import ImageWidget from "./image-widget";
 import toast from "react-hot-toast";
 import ValidationErrorMessage from "@/components/custom-component/validation-error-message";
+import { blob } from "stream/consumers";
 
 interface Props {
   initialData?: any;
@@ -67,6 +68,8 @@ export const EditDetails = ({
   userId,
 }: Props) => {
   const session = useSession();
+  console.log({ session });
+
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
   const [errorMessages, setErrorMessages] = useState<any>(null);
@@ -84,12 +87,12 @@ export const EditDetails = ({
   });
   const defaultValues = initialData
     ? {
-      ...initialData,
-      ...{
-        vehicle_type: String(initialData.vehicle_type),
-        transmission_type: String(initialData.transmission_type),
-      },
-    }
+        ...initialData,
+        ...{
+          vehicle_type: String(initialData.vehicle_type),
+          transmission_type: String(initialData.transmission_type),
+        },
+      }
     : {};
   type FormData = z.infer<typeof promptSchema>;
   const form = useForm<FormData>({
@@ -98,7 +101,9 @@ export const EditDetails = ({
   });
 
   async function onSubmit(data: FormData) {
-    setErrorMessages('');
+    console.log({ data });
+
+    setErrorMessages("");
     setIsLoading(true);
     const formData = new FormData();
     if (initialData && initialData.id) {
@@ -112,36 +117,51 @@ export const EditDetails = ({
     formData.append("transmission_type", data.transmission_type);
     formData.append("insurance_end_date", data.insurance_end_date);
     formData.append("permit_end_date", data.permit_end_date);
-    if (selectedRC1) formData.append("rc_1", selectedRC1!);
-    if (selectedRC2) formData.append("rc_2", selectedRC2!);
-    if (selectedInsurance)
-      formData.append("insurance", selectedInsurance!);
-    if (selectedPermit)
-      formData.append("permit", selectedPermit!);
+    if (selectedRC1.blob) formData.append("rc_1", selectedRC1.blob);
+    if (selectedRC2.blob) formData.append("rc_2", selectedRC2.blob);
+    if (selectedInsurance.blob)
+      formData.append("insurance", selectedInsurance.blob);
+    if (selectedInsurance2.blob)
+      formData.append("insurance_2", selectedInsurance2.blob);
+    if (selectedPermit.blob) formData.append("permit", selectedPermit.blob);
+    if (selectedPermit2.blob) formData.append("permit_2", selectedPermit2.blob);
+    if (selectedVehicle1.blob)
+      formData.append("vehicle_1", selectedVehicle1.blob);
+    if (selectedVehicle2.blob)
+      formData.append("vehicle_2", selectedVehicle2.blob);
+    if (selectedVehicle3.blob)
+      formData.append("vehicle_3", selectedVehicle3.blob);
+    if (selectedVehicle4.blob)
+      formData.append("vehicle_4", selectedVehicle4.blob);
 
     // console.log(data);
 
     if (initialData && initialData.id) {
       await axios
         .put(
-          `${process.env.BACKEND_URL}/api/v1/staff/create-vehicle/`, formData, {
-          headers: {
-            Authorization: `Bearer ${session.data?.accessToken}`,
-          },
-        })
+          `${process.env.BACKEND_URL}/api/v1/staff/create-vehicle/`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${session.data?.accessToken}`,
+            },
+          }
+        )
         .then((res) => {
           setIsLoading(false);
           setOpen(false);
-          toast.success("success")
+          toast.success("success");
           router.refresh();
         })
         .catch((error) => {
           setIsLoading(false);
-          toast.error("failed")
+          toast.error("failed");
           // console.log(error.data);
           setOpen(false);
         });
     } else {
+      console.log({ formData });
+
       await axios
         .post(
           `${process.env.BACKEND_URL}/api/v1/staff/create-vehicle/`,
@@ -155,7 +175,7 @@ export const EditDetails = ({
         .then((res) => {
           setIsLoading(false);
           setOpen(false);
-          toast.success("success")
+          toast.success("success");
           router.refresh();
           router.push(`/waiver/fleet/${userId}/vehicles`);
         })
@@ -170,10 +190,52 @@ export const EditDetails = ({
     }
   }
 
-  const [selectedRC1, setSelectedRC1] = useState<Blob>();
-  const [selectedRC2, setSelectedRC2] = useState<Blob>();
-  const [selectedInsurance, setSelectedInsurance] = useState<Blob>();
-  const [selectedPermit, setSelectedPermit] = useState<Blob>();
+  type ImageSet = {
+    url: string;
+    blob: File | null;
+  };
+
+  function initialValue(type: any) {
+    return { url: initialData[type], blob: null };
+  }
+  function setImageBlob(file: any) {
+    return { url: "", blob: file };
+  }
+
+  const [selectedRC1, setSelectedRC1] = useState<ImageSet>(
+    initialValue("rc_1")
+  );
+  const [selectedRC2, setSelectedRC2] = useState<ImageSet>(
+    initialValue("rc_2")
+  );
+  const [selectedInsurance, setSelectedInsurance] = useState<ImageSet>(
+    initialValue("insurance")
+  );
+  const [selectedInsurance2, setSelectedInsurance2] = useState<ImageSet>(
+    initialValue("insurance_2")
+  );
+
+  const [selectedPermit, setSelectedPermit] = useState<ImageSet>(
+    initialValue("permit")
+  );
+  const [selectedPermit2, setSelectedPermit2] = useState<ImageSet>(
+    initialValue("permit_2")
+  );
+  const [selectedVehicle1, setSelectedVehicle1] = useState<ImageSet>(
+    initialValue("vehicle_1")
+  );
+
+  const [selectedVehicle2, setSelectedVehicle2] = useState<ImageSet>(
+    initialValue("vehicle_2")
+  );
+
+  const [selectedVehicle3, setSelectedVehicle3] = useState<ImageSet>(
+    initialValue("vehicle_3")
+  );
+
+  const [selectedVehicle4, setSelectedVehicle4] = useState<ImageSet>(
+    initialValue("vehicle_4")
+  );
 
   return (
     <Form {...form}>
@@ -280,7 +342,7 @@ export const EditDetails = ({
                 <FormLabel>Permit End Date</FormLabel>
                 <Input
                   type="date"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={new Date().toISOString().split("T")[0]}
                   placeholder="Permit validity date"
                   {...field}
                 />
@@ -292,15 +354,13 @@ export const EditDetails = ({
             control={form.control}
             name="insurance_end_date"
             render={({ field }) => {
-              const formattedValue = field.value ? field.value.split('T')[0] : '';
+              const formattedValue = field.value
+                ? field.value.split("T")[0]
+                : "";
               return (
                 <FormItem className="mb-4">
                   <FormLabel>Insurance validity date</FormLabel>
-                  <Input
-                    type="date"
-                    {...field}
-                    value={formattedValue}
-                  />
+                  <Input type="date" {...field} value={formattedValue} />
                   <FormMessage />
                 </FormItem>
               );
@@ -310,11 +370,11 @@ export const EditDetails = ({
         <div>
           <h3 className="text-xl">Document Details</h3>
 
-          <div className="grid grid-cols-2 gap-4 w-fit">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-fit">
             <div className="my-4 flex flex-col space-y-2">
               <Label>Registration Certificate (RC)</Label>
               <div className="flex flex-row space-x-4">
-                {!initialData?.rc_1 ? (
+                {!selectedRC1.url && !selectedRC1.blob ? (
                   <>
                     <Label
                       className={cn(
@@ -330,7 +390,9 @@ export const EditDetails = ({
                     <input
                       onChange={(e) =>
                         setSelectedRC1(
-                          e.target.files ? e.target.files[0] : undefined
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
                         )
                       }
                       className="hidden"
@@ -340,16 +402,15 @@ export const EditDetails = ({
                   </>
                 ) : (
                   <ImageWidget
-                    vehicleId={initialData.id}
-                    value={
-                      `${initialData?.rc_1}` ||
-                      ""
-                    }
-                    id={initialData.id}
-                    proofType="RJS"
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.rc_1}` || ""}
+                    // id={initialData.id}
+                    // proofType="RJS"
+                    selectedImage={selectedRC1}
+                    setSelectedImage={setSelectedRC1}
                   />
                 )}
-                {!initialData?.rc_2 ? (
+                {!selectedRC2.url && !selectedRC2.blob ? (
                   <>
                     <Label
                       className={cn(
@@ -365,7 +426,9 @@ export const EditDetails = ({
                     <input
                       onChange={(e) =>
                         setSelectedRC2(
-                          e.target.files ? e.target.files[0] : undefined
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
                         )
                       }
                       className="hidden"
@@ -375,22 +438,21 @@ export const EditDetails = ({
                   </>
                 ) : (
                   <ImageWidget
-                    vehicleId={initialData.id}
-                    value={
-                      `${initialData?.rc_2}` ||
-                      ""
-                    }
-                    id={initialData.id}
-                    proofType="RJS"
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.rc_2}` || ""}
+                    // id={initialData.id}
+                    // proofType="RJS"
+                    selectedImage={selectedRC2}
+                    setSelectedImage={setSelectedRC2}
                   />
                 )}
               </div>
-
             </div>
-            <div className="flex flex-row space-x-4">
-              <div className="my-4 flex flex-col space-y-2">
-                <Label>Vehicle Insurance</Label>
-                {!initialData?.insurance ? (
+
+            <div className="my-4 flex flex-col space-y-2">
+              <Label>Vehicle Insurance</Label>
+              <div className="flex flex-row space-x-4">
+                {!selectedInsurance.url && !selectedInsurance.blob ? (
                   <>
                     <Label
                       className={cn(
@@ -406,7 +468,9 @@ export const EditDetails = ({
                     <input
                       onChange={(e) =>
                         setSelectedInsurance(
-                          e.target.files ? e.target.files[0] : undefined
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
                         )
                       }
                       className="hidden"
@@ -416,26 +480,63 @@ export const EditDetails = ({
                   </>
                 ) : (
                   <ImageWidget
-                    vehicleId={initialData.id}
-                    value={
-                      `${initialData?.insurance}` ||
-                      ""
-                    }
-                    id={initialData.id}
-                    proofType="VIS"
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedInsurance}
+                    setSelectedImage={setSelectedInsurance}
                   />
                 )}
-              </div>
-              <div className="my-4 flex flex-col space-y-2">
-                <Label>Vehicle Permit</Label>
-                {!initialData?.permit ? (
+                {!selectedInsurance2.url && !selectedInsurance2.blob ? (
                   <>
                     <Label
                       className={cn(
                         buttonVariants({ variant: "secondary" }),
                         "cursor-pointer h-[200px] w-[200px]"
                       )}
-                      htmlFor="permit"
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedInsurance2(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance_2}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedInsurance2}
+                    setSelectedImage={setSelectedInsurance2}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="my-4 flex flex-col space-y-2">
+              <Label>Vehicle Permit</Label>
+              <div className="flex flex-row space-x-4">
+                {!selectedPermit.url && !selectedPermit.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
                     >
                       <div className="flex flex-row items-center space-x-4">
                         <PlusIcon />
@@ -444,34 +545,226 @@ export const EditDetails = ({
                     <input
                       onChange={(e) =>
                         setSelectedPermit(
-                          e.target.files ? e.target.files[0] : undefined
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
                         )
                       }
                       className="hidden"
-                      id="permit"
+                      id="insurance"
                       type="file"
                     />
                   </>
                 ) : (
                   <ImageWidget
-                    vehicleId={initialData.id}
-                    value={
-                      `${initialData?.permit}` ||
-                      ""
-                    }
-                    id={initialData.id}
-                    proofType="VPS"
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedPermit}
+                    setSelectedImage={setSelectedPermit}
+                  />
+                )}
+                {!selectedPermit2.url && !selectedPermit2.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedPermit2(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance_2}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedPermit2}
+                    setSelectedImage={setSelectedPermit2}
                   />
                 )}
               </div>
-
+            </div>
+            <div className="my-4 flex flex-col space-y-2 ">
+              <Label>Vehicle Images</Label>
+              <div className="flex flex-row space-x-4">
+                {!selectedVehicle1.url && !selectedVehicle1.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedVehicle1(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedVehicle1}
+                    setSelectedImage={setSelectedVehicle1}
+                  />
+                )}
+                {!selectedVehicle2.url && !selectedVehicle2.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedVehicle2(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance_2}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedVehicle2}
+                    setSelectedImage={setSelectedVehicle2}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="my-4 flex flex-col space-y-2 ">
+              <Label className="text-white">Vehicle Images</Label>
+              <div className="flex flex-row space-x-4">
+                {!selectedVehicle3.url && !selectedVehicle3.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedVehicle3(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedVehicle3}
+                    setSelectedImage={setSelectedVehicle3}
+                  />
+                )}
+                {!selectedVehicle4.url && !selectedVehicle4.blob ? (
+                  <>
+                    <Label
+                      className={cn(
+                        buttonVariants({ variant: "secondary" }),
+                        "cursor-pointer h-[200px] w-[200px]"
+                      )}
+                      htmlFor="insurance"
+                    >
+                      <div className="flex flex-row items-center space-x-4">
+                        <PlusIcon />
+                      </div>
+                    </Label>
+                    <input
+                      onChange={(e) =>
+                        setSelectedVehicle4(
+                          setImageBlob(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        )
+                      }
+                      className="hidden"
+                      id="insurance"
+                      type="file"
+                    />
+                  </>
+                ) : (
+                  <ImageWidget
+                    // vehicleId={initialData.id}
+                    // value={`${initialData?.insurance_2}` || ""}
+                    // id={initialData.id}
+                    // proofType="VIS"
+                    selectedImage={selectedVehicle4}
+                    setSelectedImage={setSelectedVehicle4}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-2 justify-end">
           <ValidationErrorMessage errorMessages={errorMessages} />
-          <Button variant="default" disabled={isLoading} >Save</Button>
+          <Button variant="default" disabled={isLoading}>
+            Save
+          </Button>
         </div>
       </form>
     </Form>

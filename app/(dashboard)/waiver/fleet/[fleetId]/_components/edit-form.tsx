@@ -1,8 +1,21 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -51,22 +64,26 @@ export const EditDetails = ({
   });
   const defaultValues = initialData
     ? {
-      ...initialData,
-      ...{
-        state: String(initialData.state),
-        work_location: String(initialData.work_location),
-        district: String(initialData.district),
-      },
-    }
+        ...initialData,
+        ...{
+          state: String(initialData.state),
+          work_location: String(initialData.work_location),
+          district: String(initialData.district),
+        },
+      }
     : {};
   type FormData = z.infer<typeof promptSchema>;
   const form = useForm<FormData>({
     resolver: zodResolver(promptSchema),
     defaultValues,
   });
-  const { setValue, watch, formState: { errors }, } = form;
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
   async function onSubmit(data: FormData) {
-    setErrorMessages('');
+    setErrorMessages("");
     data.state = stateId;
     setIsLoading(true);
     if (initialData && initialData.id) {
@@ -82,14 +99,14 @@ export const EditDetails = ({
         )
         .then((res) => {
           setIsLoading(false);
-          toast.success("success")
+          toast.success("success");
           router.push("/waiver/fleet");
           router.refresh();
         })
         .catch((error) => {
           setIsLoading(false);
           // console.log(error.data);
-          toast.error("failed")
+          toast.error("failed");
         });
     } else {
       await axios
@@ -104,7 +121,7 @@ export const EditDetails = ({
         )
         .then((res) => {
           setIsLoading(false);
-          toast.success("success")
+          toast.success("success");
           router.push("/waiver/fleet");
           router.refresh();
         })
@@ -113,19 +130,21 @@ export const EditDetails = ({
           if (error.response && error.response.data) {
             setErrorMessages(error.response.data.error);
             toast.error(error.response.data.message || "failed");
-          } 
+          }
           toast.error("failed");
         });
     }
   }
 
-  const [stateId, setStateId] = useState(initialData ? initialData.state : states.length > 0 ? states[0].id : 1);
+  const [stateId, setStateId] = useState(
+    initialData ? initialData.state : states.length > 0 ? states[0].id : 1
+  );
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  console.log('initialData', initialData);
+  console.log("initialData", initialData);
 
   if (isMounted) {
     return (
@@ -138,8 +157,8 @@ export const EditDetails = ({
                 name="fullname"
                 render={({ field }) => (
                   <FormItem className="mb-4">
-                    <FormLabel>Fullname</FormLabel>
-                    <Input placeholder="fullname" {...field} />
+                    <FormLabel>Full Name</FormLabel>
+                    <Input placeholder="full name" {...field} />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -191,9 +210,11 @@ export const EditDetails = ({
                     <FormLabel>Date of Birth</FormLabel>
                     <Input
                       type="date"
-                      max={new Date().toISOString().split('T')[0]}
-                      placeholder="date of birth" {...field}
-                      value={watch('dob') ? watch('dob').split('T')[0] : ''} />
+                      max={new Date().toISOString().split("T")[0]}
+                      placeholder="date of birth"
+                      {...field}
+                      value={watch("dob") ? watch("dob").split("T")[0] : ""}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -204,7 +225,11 @@ export const EditDetails = ({
                 render={({ field }) => (
                   <FormItem className="mb-4">
                     <FormLabel>Phone Number</FormLabel>
-                    <Input type="number" placeholder="phone number" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="phone number"
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -216,7 +241,11 @@ export const EditDetails = ({
                 render={({ field }) => (
                   <FormItem className="mb-4">
                     <FormLabel>Alternate Phone Number</FormLabel>
-                    <Input type="number" placeholder="phone number" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="phone number"
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -228,7 +257,11 @@ export const EditDetails = ({
                 render={({ field }) => (
                   <FormItem className="mb-4">
                     <FormLabel>Whatsapp Phone Number</FormLabel>
-                    <Input type="number" placeholder="phone number" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="phone number"
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -341,8 +374,10 @@ export const EditDetails = ({
               )}
             />
             <div className="flex flex-col gap-2 justify-end">
-               <ValidationErrorMessage errorMessages={errorMessages} />
-              <Button variant="default" disabled={isLoading} >Save</Button>
+              <ValidationErrorMessage errorMessages={errorMessages} />
+              <Button variant="default" disabled={isLoading}>
+                Save
+              </Button>
             </div>
           </form>
         </Form>

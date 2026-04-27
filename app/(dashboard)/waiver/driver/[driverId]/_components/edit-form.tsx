@@ -1,9 +1,22 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -12,7 +25,14 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BankType, DistrictType, StateType, TransmissionType, UserDetails, VehicleType } from "@/lib/types";
+import {
+  BankType,
+  DistrictType,
+  StateType,
+  TransmissionType,
+  UserDetails,
+  VehicleType,
+} from "@/lib/types";
 import { Location as LocationType } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
@@ -40,7 +60,7 @@ export const EditDetails = ({
   districts,
   banks,
   transmissionTypes,
-  vehicleTypes
+  vehicleTypes,
 }: Props) => {
   const session = useSession();
   const router = useRouter();
@@ -49,13 +69,21 @@ export const EditDetails = ({
 
   const [disabled, setDisabled] = useState<boolean>(false);
   const [commandOpen, setCommandOpen] = useState(false);
-  const [transmissionTypeCommandOpen, setTransmissionTypeCommandOpen] = useState(false);
+  const [transmissionTypeCommandOpen, setTransmissionTypeCommandOpen] =
+    useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [transmissionTypeInputValue, setTransmissionTypeInputValue] = useState("");
-  const [stateId, setStateId] = useState(initialData ? initialData.state : states.length > 0 ? states[0].id : 1);
-  const [errorMessages, setErrorMessages] = useState<any>('');
-  const [selectedTransmissionType, setSelectedTransmissionType] = useState<any[]>(initialData?.transmission_type ? initialData?.transmission_type : []);
-  const [selected, setSelected] = useState<VehicleType[]>(initialData?.vehicle_type ? initialData?.vehicle_type : []);
+  const [transmissionTypeInputValue, setTransmissionTypeInputValue] =
+    useState("");
+  const [stateId, setStateId] = useState(
+    initialData ? initialData.state : states.length > 0 ? states[0].id : 1
+  );
+  const [errorMessages, setErrorMessages] = useState<any>("");
+  const [selectedTransmissionType, setSelectedTransmissionType] = useState<
+    any[]
+  >(initialData?.transmission_type ? initialData?.transmission_type : []);
+  const [selected, setSelected] = useState<VehicleType[]>(
+    initialData?.vehicle_type ? initialData?.vehicle_type : []
+  );
 
   const promptSchema = z.object({
     fullname: z.string(),
@@ -87,27 +115,31 @@ export const EditDetails = ({
   });
   const defaultValues = initialData
     ? {
-      ...initialData,
-      ...{
-        state: String(initialData?.state),
-        district: String(initialData?.district),
-        work_location: String(initialData?.work_location),
-        bank: String(initialData?.bank_details?.bank),
-        holder_name: initialData?.bank_details?.holder_name,
-        account_number: initialData?.bank_details?.account_number,
-        ifsc: initialData?.bank_details?.ifsc,
-      },
-    }
+        ...initialData,
+        ...{
+          state: String(initialData?.state),
+          district: String(initialData?.district),
+          work_location: String(initialData?.work_location),
+          bank: String(initialData?.bank_details?.bank),
+          holder_name: initialData?.bank_details?.holder_name,
+          account_number: initialData?.bank_details?.account_number,
+          ifsc: initialData?.bank_details?.ifsc,
+        },
+      }
     : {};
   type FormData = z.infer<typeof promptSchema>;
   const form = useForm<FormData>({
     resolver: zodResolver(promptSchema),
     defaultValues,
   });
-  const { setValue, watch, formState: { errors }, } = form;
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
 
   async function onSubmit(data: FormData) {
-    setDisabled(true)
+    setDisabled(true);
     data.state = stateId;
     const formData = new FormData();
     if (initialData && initialData.id) {
@@ -120,8 +152,11 @@ export const EditDetails = ({
     formData.append("gender", data.gender);
     formData.append("dob", data.dob);
     formData.append("phone", data.phone);
-    formData.append("vehicle_types", selected.map(item => item.id).join(','));
-    formData.append("transmission_type", selectedTransmissionType.map(item => item.id).join(','));
+    formData.append("vehicle_types", selected.map((item) => item.id).join(","));
+    formData.append(
+      "transmission_type",
+      selectedTransmissionType.map((item) => item.id).join(",")
+    );
     formData.append("alternative_phone", data.alternative_phone);
     formData.append("whatsapp_phone", data.whatsapp_phone);
     formData.append("state", data.state);
@@ -129,13 +164,13 @@ export const EditDetails = ({
     formData.append("work_location", data.work_location);
     formData.append("address", data.address);
     if (data.profile_image instanceof File) {
-      formData.append("profile_image", data.profile_image!)
+      formData.append("profile_image", data.profile_image!);
     }
     if (data.aadhar_image_1 instanceof File) {
-      formData.append("aadhar_image_1", data.aadhar_image_1!)
+      formData.append("aadhar_image_1", data.aadhar_image_1!);
     }
     if (data.aadhar_image_2 instanceof File) {
-      formData.append("aadhar_image_2", data.aadhar_image_2!)
+      formData.append("aadhar_image_2", data.aadhar_image_2!);
     }
     if (data.driving_license_1 instanceof File)
       formData.append("driving_license_1", data.driving_license_1!);
@@ -143,11 +178,11 @@ export const EditDetails = ({
       formData.append("driving_license_2", data.driving_license_2!);
     }
     if (data.pan_card_1 instanceof File) {
-      formData.append("pan_card_1", data.pan_card_1!)
-    };
+      formData.append("pan_card_1", data.pan_card_1!);
+    }
     if (data.pan_card_2 instanceof File) {
-      formData.append("pan_card_2", data.pan_card_2!)
-    };
+      formData.append("pan_card_2", data.pan_card_2!);
+    }
     if (data.certificate_1 instanceof File) {
       formData.append("certificate_1", data.certificate_1!);
     }
@@ -177,7 +212,7 @@ export const EditDetails = ({
           router.refresh();
         })
         .catch((error) => {
-          console.log('error', error);
+          console.log("error", error);
 
           setErrorMessages(error);
           toast.error("failed");
@@ -209,13 +244,17 @@ export const EditDetails = ({
     }
   }
 
-
   const handleUnselect = useCallback((vehicle: VehicleType) => {
     setSelected((prev) => prev.filter((s) => s.id !== vehicle.id));
   }, []);
-  const handleTransmissionTypeUnselect = useCallback((transmissionType: any) => {
-    setSelectedTransmissionType((prev) => prev.filter((s) => s.id !== transmissionType.id));
-  }, []);
+  const handleTransmissionTypeUnselect = useCallback(
+    (transmissionType: any) => {
+      setSelectedTransmissionType((prev) =>
+        prev.filter((s) => s.id !== transmissionType.id)
+      );
+    },
+    []
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -260,8 +299,12 @@ export const EditDetails = ({
     []
   );
 
-  const selectables = vehicleTypes?.filter((vehicle) => !selected.includes(vehicle));
-  const transmissionTypeSelectables = transmissionTypes?.filter((transmissionType) => !selectedTransmissionType.includes(transmissionType));
+  const selectables = vehicleTypes?.filter(
+    (vehicle) => !selected.includes(vehicle)
+  );
+  const transmissionTypeSelectables = transmissionTypes?.filter(
+    (transmissionType) => !selectedTransmissionType.includes(transmissionType)
+  );
 
   return (
     <Form {...form}>
@@ -272,8 +315,8 @@ export const EditDetails = ({
             name="fullname"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Fullname</FormLabel>
-                <Input placeholder="fullname" {...field} />
+                <FormLabel>Full Name</FormLabel>
+                <Input placeholder="full name" {...field} />
                 <FormMessage />
               </FormItem>
             )}
@@ -335,10 +378,11 @@ export const EditDetails = ({
                 <FormLabel>Date of Birth</FormLabel>
                 <Input
                   type="date"
-                  max={new Date().toISOString().split('T')[0]} // Format to 'YYYY-MM-DD'
+                  max={new Date().toISOString().split("T")[0]} // Format to 'YYYY-MM-DD'
                   placeholder="date of birth"
                   {...field}
-                  value={watch('dob') ? watch('dob').split('T')[0] : ''} />
+                  value={watch("dob") ? watch("dob").split("T")[0] : ""}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -373,7 +417,7 @@ export const EditDetails = ({
             render={({ field }) => (
               <FormItem className="mb-4">
                 <FormLabel>Whatsapp Phone Number</FormLabel>
-                <Input type='number' placeholder="phone number" {...field} />
+                <Input type="number" placeholder="phone number" {...field} />
                 <FormMessage />
               </FormItem>
             )}
@@ -567,7 +611,9 @@ export const EditDetails = ({
                             e.preventDefault();
                             e.stopPropagation();
                           }}
-                          onClick={() => handleTransmissionTypeUnselect(vehicle)}
+                          onClick={() =>
+                            handleTransmissionTypeUnselect(vehicle)
+                          }
                         >
                           <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                         </button>
@@ -587,7 +633,9 @@ export const EditDetails = ({
                 </div>
               </div>
               <div className="relative mt-2">
-                {transmissionTypeCommandOpen && transmissionTypeSelectables && transmissionTypeSelectables?.length > 0 ? (
+                {transmissionTypeCommandOpen &&
+                transmissionTypeSelectables &&
+                transmissionTypeSelectables?.length > 0 ? (
                   <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
                     <CommandGroup className="h-full overflow-auto">
                       {transmissionTypeSelectables.map((transmissionType) => {
@@ -600,7 +648,10 @@ export const EditDetails = ({
                             }}
                             onSelect={(value) => {
                               setTransmissionTypeInputValue("");
-                              setSelectedTransmissionType((prev) => [...prev, transmissionType]);
+                              setSelectedTransmissionType((prev) => [
+                                ...prev,
+                                transmissionType,
+                              ]);
                             }}
                             className={"cursor-pointer"}
                           >
@@ -630,10 +681,11 @@ export const EditDetails = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div className="my-4 ">
             <ImageInput
-              label='Profile Image'
+              label="Profile Image"
               name={`profile_image`}
               src={
-                ((watch('profile_image') instanceof File) && URL.createObjectURL((watch('profile_image')) as any)) ||
+                (watch("profile_image") instanceof File &&
+                  URL.createObjectURL(watch("profile_image") as any)) ||
                 (watch(`profile_image`) &&
                   formatImageUrl(watch(`profile_image`))) ||
                 null
@@ -641,16 +693,16 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`profile_image`, event.target.files[0]);
               }}
-
               errorMessage={errors?.profile_image?.message as string}
             />
           </div>
           <div className="my-4 flex flex-col space-y-2">
             <ImageInput
-              label='Aadhar Card'
+              label="Aadhar Card"
               name={`aadhar_image_1`}
               src={
-                ((watch('aadhar_image_1') instanceof File) && URL.createObjectURL((watch('aadhar_image_1')) as any)) ||
+                (watch("aadhar_image_1") instanceof File &&
+                  URL.createObjectURL(watch("aadhar_image_1") as any)) ||
                 (watch(`aadhar_image_1`) &&
                   formatImageUrl(watch(`aadhar_image_1`))) ||
                 null
@@ -658,16 +710,16 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`aadhar_image_1`, event.target.files[0]);
               }}
-
               errorMessage={errors?.aadhar_image_1?.message as string}
             />
           </div>
           <div className="my-4 flex flex-col space-y-2">
             <ImageInput
-              label='Aadhar Card Back'
+              label="Aadhar Card Back"
               name={`aadhar_image_2`}
               src={
-                ((watch('aadhar_image_2') instanceof File) && URL.createObjectURL((watch('aadhar_image_2')) as any)) ||
+                (watch("aadhar_image_2") instanceof File &&
+                  URL.createObjectURL(watch("aadhar_image_2") as any)) ||
                 (watch(`aadhar_image_2`) &&
                   formatImageUrl(watch(`aadhar_image_2`))) ||
                 null
@@ -675,16 +727,16 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`aadhar_image_2`, event.target.files[0]);
               }}
-
               errorMessage={errors?.aadhar_image_2?.message as string}
             />
           </div>
           <div className="w-full  my-4 gap-2">
             <ImageInput
-              label='Driving License 1'
+              label="Driving License 1"
               name={`driving_license_1`}
               src={
-                ((watch('driving_license_1') instanceof File) && URL.createObjectURL((watch('driving_license_1')) as any)) ||
+                (watch("driving_license_1") instanceof File &&
+                  URL.createObjectURL(watch("driving_license_1") as any)) ||
                 (watch(`driving_license_1`) &&
                   formatImageUrl(watch(`driving_license_1`))) ||
                 null
@@ -692,16 +744,16 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`driving_license_1`, event.target.files[0]);
               }}
-
               errorMessage={errors?.driving_license_1?.message as string}
             />
           </div>
           <div className="w-full  my-4 gap-2">
             <ImageInput
-              label='Driving License 2'
+              label="Driving License 2"
               name={`driving_license_2`}
               src={
-                ((watch('driving_license_2') instanceof File) && URL.createObjectURL((watch('driving_license_2')) as any)) ||
+                (watch("driving_license_2") instanceof File &&
+                  URL.createObjectURL(watch("driving_license_2") as any)) ||
                 (watch(`driving_license_2`) &&
                   formatImageUrl(watch(`driving_license_2`))) ||
                 null
@@ -709,50 +761,48 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`driving_license_2`, event.target.files[0]);
               }}
-
               errorMessage={errors?.driving_license_2?.message as string}
             />
           </div>
           <div className="w-full  my-4 gap-2">
             <ImageInput
-              label='PAN Card 1'
+              label="PAN Card 1"
               name={`pan_card_1`}
               src={
-                ((watch('pan_card_1') instanceof File) && URL.createObjectURL((watch('pan_card_1')) as any)) ||
-                (watch(`pan_card_1`) &&
-                  formatImageUrl(watch(`pan_card_1`))) ||
+                (watch("pan_card_1") instanceof File &&
+                  URL.createObjectURL(watch("pan_card_1") as any)) ||
+                (watch(`pan_card_1`) && formatImageUrl(watch(`pan_card_1`))) ||
                 null
               }
               onChange={(event: any) => {
                 setValue(`pan_card_1`, event.target.files[0]);
               }}
-
               errorMessage={errors?.pan_card_1?.message as string}
             />
           </div>
           <div className="w-full  my-4 gap-2">
             <ImageInput
-              label='PAN Card 2'
+              label="PAN Card 2"
               name={`pan_card_2`}
               src={
-                ((watch('pan_card_2') instanceof File) && URL.createObjectURL((watch('pan_card_2')) as any)) ||
-                (watch(`pan_card_2`) &&
-                  formatImageUrl(watch(`pan_card_2`))) ||
+                (watch("pan_card_2") instanceof File &&
+                  URL.createObjectURL(watch("pan_card_2") as any)) ||
+                (watch(`pan_card_2`) && formatImageUrl(watch(`pan_card_2`))) ||
                 null
               }
               onChange={(event: any) => {
                 setValue(`pan_card_2`, event.target.files[0]);
               }}
-
               errorMessage={errors?.pan_card_2?.message as string}
             />
           </div>
           <div className="w-full my-4 gap-2">
             <ImageInput
-              label='Police Clearance Certificate'
+              label="Police Clearance Certificate"
               name={`certificate_1`}
               src={
-                ((watch('certificate_1') instanceof File) && URL.createObjectURL((watch('certificate_1')) as any)) ||
+                (watch("certificate_1") instanceof File &&
+                  URL.createObjectURL(watch("certificate_1") as any)) ||
                 (watch(`certificate_1`) &&
                   formatImageUrl(watch(`certificate_1`))) ||
                 null
@@ -760,16 +810,16 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`certificate_1`, event.target.files[0]);
               }}
-
               errorMessage={errors?.certificate_1?.message as string}
             />
           </div>
           <div className="w-full my-4 gap-2">
             <ImageInput
-              label='Police Clearance Certificate 2'
+              label="Police Clearance Certificate 2"
               name={`certificate_1`}
               src={
-                ((watch('certificate_2') instanceof File) && URL.createObjectURL((watch('certificate_2')) as any)) ||
+                (watch("certificate_2") instanceof File &&
+                  URL.createObjectURL(watch("certificate_2") as any)) ||
                 (watch(`certificate_2`) &&
                   formatImageUrl(watch(`certificate_2`))) ||
                 null
@@ -777,7 +827,6 @@ export const EditDetails = ({
               onChange={(event: any) => {
                 setValue(`certificate_2`, event.target.files[0]);
               }}
-
               errorMessage={errors?.certificate_2?.message as string}
             />
           </div>
@@ -852,7 +901,9 @@ export const EditDetails = ({
         </div>
         <div className="flex justify-end">
           <ValidationErrorMessage errorMessages={errorMessages} />
-          <Button variant="default" disabled={disabled} >Save</Button>
+          <Button variant="default" disabled={disabled}>
+            Save
+          </Button>
         </div>
       </form>
     </Form>

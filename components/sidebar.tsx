@@ -6,7 +6,7 @@ import SidebarItems from "./sidebar-items";
 import * as Dialog from "@radix-ui/react-dialog";
 import { MenuIcon, X } from "lucide-react";
 
-const Sidebar = () => {
+const Sidebar = ({ session }: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -29,15 +29,15 @@ const Sidebar = () => {
               </Dialog.Close>
             </div>
             <div className="space-y-4 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-              <SidebarItems setIsOpen={setIsOpen} />
+              <SidebarItems setIsOpen={setIsOpen} session={session} />
             </div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
 
       <aside className="h-screen w-52 lg:w-64 bg-background hidden md:block p-4 pt-8 border-r border-border shadow-inner overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <div className="flex flex-col justify-between h-full pb-20 space-y-4">
-          <SidebarItems setIsOpen={setIsOpen} />
+        <div className="flex flex-col justify-between item-start gap-4 pb-20 space-y-4">
+          <SidebarItems setIsOpen={setIsOpen} session={session} />
         </div>
       </aside>
     </>

@@ -6,10 +6,13 @@ interface Props {
 }
 export default async function UserIdPage({ params }: Props) {
   const edit = params.userId !== "new";
-  console.log('params', params);
-  console.log('edit', edit);
+  console.log("params", params);
+  console.log("edit", edit);
 
-  const userDetails = edit ? await getUserDetails(edit ? params.userId : '', "CTR") : null;
+  const userDetails = edit
+    ? await getUserDetails(edit ? params.userId : "", "CTR")
+    : null;
+
   return (
     <div className="min-h-screen flex flex-col bg-white p-4">
       <div className="border-b pb-4 mb-4 w-full">
@@ -18,11 +21,7 @@ export default async function UserIdPage({ params }: Props) {
         </h2>
       </div>
       <NewUserForm initialData={userDetails} />
-      {edit &&
-        <div>
-
-        </div>
-      }
+      {edit && <div></div>}
     </div>
   );
 }

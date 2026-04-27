@@ -5,6 +5,7 @@ import { env } from "@/env.mjs";
 import { authOptions } from "@/lib/auth";
 import { fetchAPIData } from "./apifetch";
 import { apiEndpoints } from "./api-endpoints";
+import { redirect } from "next/navigation";
 
 export async function getUsers(
   type: string,
@@ -15,6 +16,7 @@ export async function getUsers(
   maxRating?: string
 ) {
   const session = await getServerSession(authOptions);
+
   if (!session) {
     console.log("No user");
   }
@@ -30,7 +32,7 @@ export async function getUsers(
 
   const response: any = await fetchAPIData({
     apiEndpoint: apiEndpoints.admin.users.users,
-    ...paramsObject
+    ...paramsObject,
   });
 
   // const response = axios({
@@ -68,7 +70,7 @@ export async function getUserDetails(id: string, type?: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      redirect("/not-found");
     });
 
   return response;
@@ -76,6 +78,9 @@ export async function getUserDetails(id: string, type?: string) {
 
 export async function getInternalUsers() {
   const session = await getServerSession(authOptions);
+
+  console.log({ session });
+
   if (!session) {
     console.log("No user");
   }

@@ -5,11 +5,12 @@ import Image from "next/image";
 import { CellAction } from "./cell-action";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Edit, Pencil, Trash } from "lucide-react";
+import { Edit, Pencil, Trash, Wallet } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { DeleteUser } from "./delete";
 import { ChangeUserStatus } from "./change-user-status";
 import Link from "next/link";
+import { WalletUser } from "@/app/(dashboard)/wallet";
 
 // import { CellAction } from "./cell-action"
 
@@ -79,7 +80,7 @@ export const columns: ColumnDef<Column>[] = [
   {
     header: "Other Action",
     cell: ({ row }) => {
-      const userType = row.original.user_type
+      const userType = row.original.user_type;
       let userLink;
       if (userType == "DVR") {
         userLink = "driver";
@@ -115,6 +116,7 @@ export const columns: ColumnDef<Column>[] = [
           status={row.original.status}
           name={row.original.fullname}
         />
+        <WalletUser userId={row.original.user} />
         <DeleteUser userId={row.original.id} />
       </div>
     ),

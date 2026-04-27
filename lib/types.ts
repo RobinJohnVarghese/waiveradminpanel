@@ -3,7 +3,7 @@ export type UserDetails = {
   all_access: string[];
   is_manager: boolean;
   is_admin: boolean;
-  is_staff: boolean
+  is_staff: boolean;
   fullname: string;
   id: string;
   unique_id: string;
@@ -16,6 +16,7 @@ export type UserDetails = {
   state: string;
   district: string;
   location: string;
+  location_name: string;
   address: string;
   is_active: boolean;
 };
@@ -31,7 +32,7 @@ export type DocumentType = {
   pan_card_2: any;
   certificate_1: any;
   certificate_2: any;
-}
+};
 
 export type UserType = {
   fullname: string;
@@ -142,4 +143,4 @@ export type RatingType = {
   review_type: string;
   created_at: string;
   updated_at: string;
-}
+};

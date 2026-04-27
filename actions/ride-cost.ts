@@ -417,7 +417,6 @@ export async function getVehicleDetails(id: string) {
   return response;
 }
 
-
 export async function getWaiverReport() {
   const session = await getServerSession(authOptions);
   if (!session) {

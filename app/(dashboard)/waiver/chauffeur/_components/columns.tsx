@@ -1,36 +1,37 @@
-"use client";
+"use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
-import { CellAction } from "./cell-action";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Edit, Pencil, Trash } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { DeleteUser } from "./delete";
-import { ChangeUserStatus } from "./change-user-status";
-import Link from "next/link";
+import { ColumnDef } from "@tanstack/react-table"
+import Image from "next/image"
+import { CellAction } from "./cell-action"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import { Edit, Pencil, Trash } from "lucide-react"
+import { buttonVariants } from "@/components/ui/button"
+import { DeleteUser } from "./delete"
+import { ChangeUserStatus } from "./change-user-status"
+import Link from "next/link"
+import { WalletUser } from "@/app/(dashboard)/wallet"
 
 // import { CellAction } from "./cell-action"
 
 export type Column = {
-  status: string;
-  id: string;
-  name: string;
-  fullname: string;
-  user_type: string;
-  course: string;
-  date: string;
-  user: string;
-  created_at: string;
-  joined_at: string;
-};
+  status: string
+  id: string
+  name: string
+  fullname: string
+  user_type: string
+  course: string
+  date: string
+  user: string
+  created_at: string
+  joined_at: string
+}
 
 export const columns: ColumnDef<Column>[] = [
   {
     header: "No",
     cell: ({ row }) => {
-      return <>{row.index + 1}</>;
+      return <>{row.index + 1}</>
     },
   },
   {
@@ -53,7 +54,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status");
+      const status = row.getValue("status")
 
       return (
         <Badge
@@ -75,20 +76,20 @@ export const columns: ColumnDef<Column>[] = [
             ? "Blocked"
             : "Rejected"}
         </Badge>
-      );
+      )
     },
   },
   {
     header: "Other Action",
     cell: ({ row }) => {
       const userType = row.original.user_type
-      let userLink;
+      let userLink
       if (userType == "DVR") {
-        userLink = "driver";
+        userLink = "driver"
       } else if (userType == "FTR") {
-        userLink = "fleet";
+        userLink = "fleet"
       } else if (userType == "CHR") {
-        userLink = "chauffeur";
+        userLink = "chauffeur"
       }
       return (
         <div className="flex w-fit flex-col space-y-2">
@@ -105,7 +106,7 @@ export const columns: ColumnDef<Column>[] = [
             Details
           </Link>
         </div>
-      );
+      )
     },
   },
   {
@@ -117,8 +118,9 @@ export const columns: ColumnDef<Column>[] = [
           status={row.original.status}
           name={row.original.fullname}
         />
+        <WalletUser userId={row.original.user} />
         <DeleteUser userId={row.original.id} />
       </div>
     ),
   },
-];
+]

@@ -50,7 +50,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  searchKey = 'fullName',
+  searchKey = "fullName",
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filterValues, setFilterValues] = useState({
@@ -58,7 +58,13 @@ export function DataTable<TData, TValue>({
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const searchColumns = ['fullName', 'phone', 'email'];
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
+  const searchColumns = ["fullName", "phone", "email"];
 
   const globalFilterFn = (row: any, columnIds: any, filterValue: any) => {
     return searchColumns.some((colId) => {
@@ -66,6 +72,7 @@ export function DataTable<TData, TValue>({
       return String(rowValue).toLowerCase().includes(filterValue.toLowerCase());
     });
   };
+
   const table = useReactTable({
     data,
     columns,
@@ -75,22 +82,31 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       globalFilter,
-      columnFilters
+      columnFilters,
+      pagination,
     },
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn,
     filterFns: { globalFilterFn },
+    onPaginationChange: setPagination,
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 20,
+      },
+    },
   });
 
   const handleFilterChange = (field: string, value: string | boolean) => {
-    setFilterValues(prevState => ({
+    setFilterValues((prevState) => ({
       ...prevState,
       [field]: value,
     }));
   };
 
   const applyFilters = () => {
-    const filters = Object.entries(filterValues).filter(([field, value]) => value !== null) // Exclude null filters
+    const filters = Object.entries(filterValues)
+      .filter(([field, value]) => value !== null) // Exclude null filters
       .map(([field, value]) => ({
         id: field,
         value,
@@ -105,23 +121,31 @@ export function DataTable<TData, TValue>({
 
   const handleDownload = () => {
     if (!data.length) return;
-    const dataToExport = table.getFilteredRowModel().rows.map(row => row.original);
-    exportToCSV(dataToExport, 'chauffeur-waivers');
+    const dataToExport = table
+      .getFilteredRowModel()
+      .rows.map((row) => row.original);
+    exportToCSV(dataToExport, "users");
   };
 
   const summary = useMemo(() => {
     if (data && Array.isArray(data)) {
       const totalCount = data.length;
 
-      const pendingUsersCount = data.filter((user: any) => user.status === 'PDG').length;
-      const activeUsersCount = data.filter((user: any) => user.status === 'ATV').length;
-      const inactiveUsersCount = data.filter((user: any) => user.status === 'BCD').length;
+      const pendingUsersCount = data.filter(
+        (user: any) => user.status === "PDG"
+      ).length;
+      const activeUsersCount = data.filter(
+        (user: any) => user.status === "ATV"
+      ).length;
+      const inactiveUsersCount = data.filter(
+        (user: any) => user.status === "BCD"
+      ).length;
 
       return {
         totalCount,
         pendingUsersCount,
         activeUsersCount,
-        inactiveUsersCount
+        inactiveUsersCount,
       };
     }
 
@@ -129,7 +153,7 @@ export function DataTable<TData, TValue>({
       totalCount: 0,
       pendingUsersCount: 0,
       activeUsersCount: 0,
-      inactiveUsersCount: 0
+      inactiveUsersCount: 0,
     };
   }, [data]);
 
@@ -137,8 +161,17 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4 justify-between">
         <div className="flex flex-row space-x-2 items-center">
-          <Link className={cn(buttonVariants({ variant: "default" }))} href={`/users/new`}>Add New User</Link>
-          <Button type="button" variant="outline" onClick={() => handleDownload()}>
+          <Link
+            className={cn(buttonVariants({ variant: "default" }))}
+            href={`/users/new`}
+          >
+            Add New User
+          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleDownload()}
+          >
             <CloudDownload className="mr-2 h-4 w-4" />
             Download
           </Button>
@@ -155,7 +188,9 @@ export function DataTable<TData, TValue>({
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                   <div className="w-full space-y-2">
-                    <span className="text-sm text-muted-foreground">Status</span>
+                    <span className="text-sm text-muted-foreground">
+                      Status
+                    </span>
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <input
@@ -163,8 +198,8 @@ export function DataTable<TData, TValue>({
                           id="pending"
                           name="status"
                           value="pending"
-                          checked={filterValues.status === 'PDG'}
-                          onChange={(e) => handleFilterChange("status", 'PDG')}
+                          checked={filterValues.status === "PDG"}
+                          onChange={(e) => handleFilterChange("status", "PDG")}
                           onClick={handleInputClick}
                         />
                         <label htmlFor="pending">Pending</label>
@@ -175,8 +210,8 @@ export function DataTable<TData, TValue>({
                           id="active"
                           name="status"
                           value="active"
-                          checked={filterValues.status === 'ATV'}
-                          onChange={(e) => handleFilterChange("status", 'ATV')}
+                          checked={filterValues.status === "ATV"}
+                          onChange={(e) => handleFilterChange("status", "ATV")}
                           onClick={handleInputClick}
                         />
                         <label htmlFor="active">Active</label>
@@ -187,8 +222,8 @@ export function DataTable<TData, TValue>({
                           id="inactive"
                           name="status"
                           value="inactive"
-                          checked={filterValues.status === 'BCD'}
-                          onChange={(e) => handleFilterChange("status", 'BCD')}
+                          checked={filterValues.status === "BCD"}
+                          onChange={(e) => handleFilterChange("status", "BCD")}
                           onClick={handleInputClick}
                         />
                         <label htmlFor="inactive">Inactive</label>
@@ -199,10 +234,7 @@ export function DataTable<TData, TValue>({
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <Button
-                  onClick={applyFilters}
-                  className="w-full"
-                >
+                <Button onClick={applyFilters} className="w-full">
                   Submit
                 </Button>
               </DropdownMenuItem>
@@ -219,10 +251,26 @@ export function DataTable<TData, TValue>({
       </div>
       <Section title="User Statistics" customClass={true}>
         <StatGrid>
-          <StatTile stat={summary.totalCount} label="Total Users" icon="/images/assets/total-chauffeurs.png" />
-          <StatTile stat={summary.pendingUsersCount} label="Active Users" icon="/images/assets/active.png" />
-          <StatTile stat={summary.activeUsersCount} label="Active Users" icon="/images/assets/active.png" />
-          <StatTile stat={summary.inactiveUsersCount} label="Blocked Users" icon="/images/assets/blocked.png" />
+          <StatTile
+            stat={summary.totalCount}
+            label="Total Users"
+            icon="/images/assets/total-chauffeurs.png"
+          />
+          <StatTile
+            stat={summary.pendingUsersCount}
+            label="Active Users"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={summary.activeUsersCount}
+            label="Active Users"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={summary.inactiveUsersCount}
+            label="Blocked Users"
+            icon="/images/assets/blocked.png"
+          />
         </StatGrid>
       </Section>
       <div className="rounded-md border">
@@ -236,9 +284,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -297,25 +345,54 @@ export function DataTable<TData, TValue>({
   );
 }
 
-const Section = ({ children, title, customClass = false }: { title: string; children: ReactNode, customClass?: boolean }) => {
-
+const Section = ({
+  children,
+  title,
+  customClass = false,
+}: {
+  title: string;
+  children: ReactNode;
+  customClass?: boolean;
+}) => {
   return (
-    <div className={cn("border rounded-lg shadow-md bg-white w-full p-4 sm:p-6 mb-3",)}>
-      <h4 className="text-base sm:text-[16px] md:text-lg font-semibold text-gray-700 mb-3">{title}</h4>
+    <div
+      className={cn(
+        "border rounded-lg shadow-md bg-white w-full p-4 sm:p-6 mb-3"
+      )}
+    >
+      <h4 className="text-base sm:text-[16px] md:text-lg font-semibold text-gray-700 mb-3">
+        {title}
+      </h4>
       {children}
     </div>
   );
-}
+};
 
 const StatGrid = ({ children }: { children: ReactNode }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">{children}</div>
 );
 
-const StatTile = ({ stat, label, icon }: { stat: number; label: string; icon: string }) => (
+const StatTile = ({
+  stat,
+  label,
+  icon,
+}: {
+  stat: number;
+  label: string;
+  icon: string;
+}) => (
   <div className="bg-gradient-to-r from-white to-gray-50 border rounded-md shadow-sm p-3 md:p-4 flex items-center space-x-3 hover:shadow-md transition-shadow">
-    <Image src={icon} alt={label} width={40} height={40} className="rounded-full bg-gray-200 p-2 shadow-inner" />
+    <Image
+      src={icon}
+      alt={label}
+      width={40}
+      height={40}
+      className="rounded-full bg-gray-200 p-2 shadow-inner"
+    />
     <div className="flex flex-col">
-      <h2 className="text-base sm:text-[16px] font-bold text-gray-800">{stat ?? 0}</h2>
+      <h2 className="text-base sm:text-[16px] font-bold text-gray-800">
+        {stat ?? 0}
+      </h2>
       <p className="text-xs sm:text-sm text-gray-600">{label}</p>
     </div>
   </div>
