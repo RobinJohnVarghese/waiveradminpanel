@@ -39,8 +39,7 @@ const SidebarItems = ({
   setIsOpen: (val: boolean) => void;
   session: Session;
 }) => {
-  let permissions: any = {};
-  permissions = session?.user?.permissions;
+  let permissions: any = session?.user?.permissions || {};
 
   console.log({ permissions });
 
