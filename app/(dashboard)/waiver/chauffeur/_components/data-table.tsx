@@ -22,6 +22,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { CloudDownload, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -45,20 +46,26 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
+  locations?: any[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  locations = [],
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filterValues, setFilterValues] = useState({
-    location: [] as string[],
-    online: "",
-    status: "",
-    rating_min: "0.0",
-    rating_max: "0.0",
+    location: searchParams?.get("location") || "",
+    online: searchParams?.get("is_online") || "",
+    status: searchParams?.get("status") || "",
+    rating_min: searchParams?.get("rating_min") || "0.0",
+    rating_max: searchParams?.get("rating_max") || "0.0",
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -98,12 +105,40 @@ export function DataTable<TData, TValue>({
   };
 
   const applyFilters = () => {
-    const filters = Object.entries(filterValues).map(([field, value]) => ({
-      id: field,
-      value,
-    }));
-    setColumnFilters(filters);
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    
+    if (filterValues.location) {
+      params.set("location", filterValues.location);
+    } else {
+      params.delete("location");
+    }
+    
+    if (filterValues.online) {
+      params.set("is_online", filterValues.online);
+    } else {
+      params.delete("is_online");
+    }
+    
+    if (filterValues.status) {
+      params.set("status", filterValues.status);
+    } else {
+      params.delete("status");
+    }
+
+    if (filterValues.rating_min && filterValues.rating_min !== "0.0") {
+      params.set("rating_min", filterValues.rating_min);
+    } else {
+      params.delete("rating_min");
+    }
+
+    if (filterValues.rating_max && filterValues.rating_max !== "0.0") {
+      params.set("rating_max", filterValues.rating_max);
+    } else {
+      params.delete("rating_max");
+    }
+
     setDropdownOpen(false);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleInputClick = (e: React.MouseEvent) => {
@@ -179,46 +214,24 @@ export function DataTable<TData, TValue>({
                       Location
                     </span>
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="kochi"
-                          checked={filterValues.location.includes("Kochi")}
-                          onChange={(e) => {
-                            const newLocations = e.target.checked
-                              ? [...filterValues.location, "Kochi"]
-                              : filterValues.location.filter(
-                                  (loc) => loc !== "Kochi"
-                                );
-                            handleFilterChange(
-                              "location",
-                              newLocations.join(",")
-                            );
-                          }}
-                          onClick={handleInputClick}
-                        />
-                        <label htmlFor="kochi">Kochi</label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="kollam"
-                          checked={filterValues.location.includes("Kollam")}
-                          onChange={(e) => {
-                            const newLocations = e.target.checked
-                              ? [...filterValues.location, "Kollam"]
-                              : filterValues.location.filter(
-                                  (loc) => loc !== "Kollam"
-                                );
-                            handleFilterChange(
-                              "location",
-                              newLocations.join(",")
-                            );
-                          }}
-                          onClick={handleInputClick}
-                        />
-                        <label htmlFor="kollam">Kollam</label>
-                      </div>
+                      {locations.map((location) => (
+                        <div key={location.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id={`location-${location.id}`}
+                            checked={filterValues.location.includes(location.name)}
+                            onChange={(e) => {
+                              const locArray = filterValues.location ? filterValues.location.split(",") : [];
+                              const newLocations = e.target.checked
+                                ? [...locArray, location.name]
+                                : locArray.filter((loc) => loc !== location.name);
+                              handleFilterChange("location", newLocations.join(","));
+                            }}
+                            onClick={handleInputClick}
+                          />
+                          <label htmlFor={`location-${location.id}`}>{location.name}</label>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </DropdownMenuItem>
@@ -272,8 +285,8 @@ export function DataTable<TData, TValue>({
                           type="radio"
                           id="active"
                           name="status"
-                          value="active"
-                          checked={filterValues.status === "active"}
+                          value="ACE"
+                          checked={filterValues.status === "ACE"}
                           onChange={(e) =>
                             handleFilterChange("status", e.target.value)
                           }
@@ -286,14 +299,42 @@ export function DataTable<TData, TValue>({
                           type="radio"
                           id="pending"
                           name="status"
-                          value="pending"
-                          checked={filterValues.status === "pending"}
+                          value="PDG"
+                          checked={filterValues.status === "PDG"}
                           onChange={(e) =>
                             handleFilterChange("status", e.target.value)
                           }
                           onClick={handleInputClick}
                         />
                         <label htmlFor="pending">Pending</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="blocked"
+                          name="status"
+                          value="BCD"
+                          checked={filterValues.status === "BCD"}
+                          onChange={(e) =>
+                            handleFilterChange("status", e.target.value)
+                          }
+                          onClick={handleInputClick}
+                        />
+                        <label htmlFor="blocked">Blocked</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="rejected"
+                          name="status"
+                          value="RJD"
+                          checked={filterValues.status === "RJD"}
+                          onChange={(e) =>
+                            handleFilterChange("status", e.target.value)
+                          }
+                          onClick={handleInputClick}
+                        />
+                        <label htmlFor="rejected">Rejected</label>
                       </div>
                     </div>
                   </div>

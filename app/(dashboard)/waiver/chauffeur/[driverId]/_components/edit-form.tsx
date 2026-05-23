@@ -107,22 +107,22 @@ export const EditDetails = ({
 
   const defaultValues = initialData
     ? {
-        ...initialData,
-        ...{
-          state: String(initialData.state),
-          district: String(initialData.district),
-          work_location: String(initialData.work_location),
-          vehicle_type: String(initialData.vehicle_type),
-          vehicle_types: initialData.vehicle_type,
-          transmission_type: String(initialData.transmission_type),
-          driving_experience: String(initialData.driving_experience),
-          bank: String(initialData?.bank_details?.bank),
-          holder_name: initialData?.bank_details?.holder_name,
-          account_number: initialData?.bank_details?.account_number,
-          ifsc: initialData?.bank_details?.ifsc,
-          license_validity: initialData?.license_validity,
-        },
-      }
+      ...initialData,
+      ...{
+        state: initialData.state ? String(initialData.state) : "",
+        district: initialData.district ? String(initialData.district) : "",
+        work_location: initialData.work_location ? String(initialData.work_location) : "",
+        vehicle_type: initialData.vehicle_type ? String(initialData.vehicle_type) : "",
+        vehicle_types: initialData.vehicle_type,
+        transmission_type: initialData.transmission_type ? String(initialData.transmission_type) : "",
+        driving_experience: initialData.driving_experience ? String(initialData.driving_experience) : "",
+        bank: initialData?.bank_details?.bank ? String(initialData?.bank_details?.bank) : "",
+        holder_name: initialData?.bank_details?.holder_name || "",
+        account_number: initialData?.bank_details?.account_number || "",
+        ifsc: initialData?.bank_details?.ifsc || "",
+        license_validity: initialData?.license_validity || "",
+      },
+    }
     : {};
 
   type FormData = z.infer<typeof promptSchema>;
@@ -144,7 +144,9 @@ export const EditDetails = ({
     if (initialData && initialData.id) {
       formData.append("id", initialData.id);
       formData.append("user", initialData.user);
-      formData.append("bank_id", initialData.bank_details.id);
+      if (initialData.bank_details?.id) {
+        formData.append("bank_id", initialData.bank_details.id);
+      }
     }
     formData.append("fullname", data.fullname);
     formData.append("email", data.email);
@@ -153,17 +155,17 @@ export const EditDetails = ({
     formData.append("phone", data.phone);
     formData.append("alternative_phone", data.alternative_phone);
     formData.append("whatsapp_phone", data.whatsapp_phone);
-    formData.append("state", data.state);
-    formData.append("district", data.district);
-    formData.append("vehicle_types", selected.map((item) => item.id).join(","));
-    formData.append(
+    if (data.state) formData.append("state", data.state);
+    if (data.district) formData.append("district", data.district);
+    if (selected.length > 0) formData.append("vehicle_types", selected.map((item) => item.id).join(","));
+    if (selectedTransmissionType.length > 0) formData.append(
       "transmission_type",
       selectedTransmissionType.map((item) => item.id).join(",")
     );
-    formData.append("work_location", data.work_location);
-    formData.append("address", data.address);
-    formData.append("driving_experience", data.driving_experience);
-    formData.append("license_validity", data.license_validity);
+    if (data.work_location) formData.append("work_location", data.work_location);
+    if (data.address) formData.append("address", data.address);
+    if (data.driving_experience) formData.append("driving_experience", data.driving_experience);
+    if (data.license_validity) formData.append("license_validity", data.license_validity);
     if (data.profile_image instanceof File) {
       formData.append("profile_image", data.profile_image!);
     }
@@ -190,10 +192,10 @@ export const EditDetails = ({
     if (data.certificate_2 instanceof File) {
       formData.append("certificate_2", data.certificate_2!);
     }
-    formData.append("bank", data.bank!);
-    formData.append("holder_name", data.holder_name!);
-    formData.append("account_number", data.account_number!);
-    formData.append("ifsc", data.ifsc!);
+    if (data.bank) formData.append("bank", data.bank);
+    if (data.holder_name) formData.append("holder_name", data.holder_name);
+    if (data.account_number) formData.append("account_number", data.account_number);
+    if (data.ifsc) formData.append("ifsc", data.ifsc);
     // console.log(data);
 
     if (initialData && initialData.id) {
@@ -214,8 +216,10 @@ export const EditDetails = ({
           router.refresh();
         })
         .catch((error) => {
-          // console.log(error.data);
-          toast.error("failed");
+          const errorData = error.response?.data;
+          console.error("Backend Error:", errorData);
+          const errorMessage = errorData?.error ? JSON.stringify(errorData.error) : (errorData?.message || "failed");
+          toast.error(`Error: ${errorMessage}`);
           setDisabled(false);
         });
     } else {
@@ -236,8 +240,10 @@ export const EditDetails = ({
           router.refresh();
         })
         .catch((error) => {
-          // console.log(error.data);
-          toast.error("failed");
+          const errorData = error.response?.data;
+          console.error("Backend Error:", errorData);
+          const errorMessage = errorData?.error ? JSON.stringify(errorData.error) : (errorData?.message || "failed");
+          toast.error(`Error: ${errorMessage}`);
           setDisabled(false);
         });
     }
@@ -692,8 +698,8 @@ export const EditDetails = ({
                 </div>
                 <div className="relative mt-2">
                   {transmissionTypeCommandOpen &&
-                  transmissionTypeSelectables &&
-                  transmissionTypeSelectables?.length > 0 ? (
+                    transmissionTypeSelectables &&
+                    transmissionTypeSelectables?.length > 0 ? (
                     <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
                       <CommandGroup className="h-full overflow-auto">
                         {transmissionTypeSelectables.map((transmissionType) => {

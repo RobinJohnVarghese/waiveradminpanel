@@ -24,7 +24,7 @@ export async function getUsers(
   const queryParams = new URLSearchParams();
   queryParams.append("type", type);
   if (location) queryParams.append("location", location);
-  if (onlineOffline) queryParams.append("online-offline", onlineOffline);
+  if (onlineOffline) queryParams.append("is_online", onlineOffline);
   if (status) queryParams.append("status", status);
   if (minRating) queryParams.append("min_rating", minRating);
   if (maxRating) queryParams.append("max_rating", maxRating);

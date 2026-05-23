@@ -8,7 +8,7 @@ import { signOut } from "next-auth/react";
 
 const serverConnectAPI = axios.create({
     // baseURL: baseURL,
-    baseURL: `https://api.waiverapp.in/api/v1/staff/`,
+    baseURL: `${env.BACKEND_URL?.replace(/\/$/, "")}/api/v1/staff/`,
     headers: { "Content-Type": "multipart/form-data", Accept: "*/*" },
 });
 

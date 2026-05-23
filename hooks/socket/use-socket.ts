@@ -22,7 +22,9 @@ const useWebSocket = (auth: any) => {
             socketRef.current.close();
         }
 
-        const wsUrl = `wss://api.waiverapp.in/ws/live-location/?token=${auth.accessToken}`;
+        // const wsUrl = `wss://api.waiverapp.in/ws/live-location/?token=${auth.accessToken}`;
+        const wsBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "ws://127.0.0.1:8010";
+        const wsUrl = `${wsBaseUrl.replace(/^http/, "ws").replace(/\/$/, "")}/ws/live-location/?token=${auth.accessToken}`;
         console.log("🔗 Attempting WebSocket connection to:", wsUrl);
 
         socketRef.current = new WebSocket(wsUrl);
@@ -79,7 +81,7 @@ const useWebSocket = (auth: any) => {
                     id: user_id,
                     name: data.username || "User",
                     user_type: data.user_type,
-                    user_phone: data.user_phone ,
+                    user_phone: data.user_phone,
                     is_online: true,
                     location: {
                         lat: current_loc_lat,
