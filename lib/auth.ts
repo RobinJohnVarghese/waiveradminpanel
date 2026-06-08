@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         return (
           (await axios({
             method: "post",
-            url: `${env.BACKEND_URL}api/v1/staff/login/`,
+            url: `${env.BACKEND_URL?.replace(/\/$/, "")}/api/v1/staff/login/`,
             data: JSON.stringify({
               username: username,
               password: password,
@@ -43,8 +43,8 @@ export const authOptions: NextAuthOptions = {
               return response.data;
             })
             .catch((error) => {
-              console.log("BACKEND ERROR RESPONSE:", error.response?.data);
-              throw new Error(error.response?.data?.error || JSON.stringify(error.response?.data));
+              console.log("BACKEND ERROR RESPONSE:", error.response?.data || error.message);
+              throw new Error(error.response?.data?.error || (error.response?.data ? JSON.stringify(error.response?.data) : null) || error.message || "Login failed");
             })) || null
         );
       },
