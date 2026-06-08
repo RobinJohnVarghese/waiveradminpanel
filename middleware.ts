@@ -9,6 +9,12 @@ export default withAuth(
     const isAuthPage = req.nextUrl.pathname.startsWith("/login");
 
     if (isAuthPage) {
+      if (req.nextUrl.searchParams.get("clearSession")) {
+        const response = NextResponse.redirect(new URL("/login", req.url));
+        response.cookies.delete("next-auth.session-token");
+        response.cookies.delete("__Secure-next-auth.session-token");
+        return response;
+      }
       if (isAuth) {
         return NextResponse.redirect(new URL("/", req.url));
       }
