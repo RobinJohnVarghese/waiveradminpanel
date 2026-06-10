@@ -141,6 +141,18 @@ export function DataTable<TData, TValue>({
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const clearFilters = () => {
+    setFilterValues({
+      location: "",
+      online: "",
+      status: "",
+      rating_min: "0.0",
+      rating_max: "0.0",
+    });
+    setDropdownOpen(false);
+    router.push(pathname);
+  };
+
   const handleInputClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -380,9 +392,14 @@ export function DataTable<TData, TValue>({
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <Button onClick={applyFilters} className="w-full">
-                  Submit
-                </Button>
+                <div className="flex flex-col gap-2 w-full">
+                  <Button onClick={applyFilters} className="w-full">
+                    Submit
+                  </Button>
+                  <Button onClick={clearFilters} variant="outline" className="w-full">
+                    Clear
+                  </Button>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
