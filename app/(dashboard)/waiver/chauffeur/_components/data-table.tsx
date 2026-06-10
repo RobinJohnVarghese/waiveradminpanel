@@ -106,19 +106,19 @@ export function DataTable<TData, TValue>({
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams?.toString() || "");
-    
+
     if (filterValues.location) {
       params.set("location", filterValues.location);
     } else {
       params.delete("location");
     }
-    
+
     if (filterValues.online) {
       params.set("is_online", filterValues.online);
     } else {
       params.delete("is_online");
     }
-    
+
     if (filterValues.status) {
       params.set("status", filterValues.status);
     } else {
@@ -434,9 +434,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
