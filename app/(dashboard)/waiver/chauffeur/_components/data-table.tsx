@@ -150,7 +150,9 @@ export function DataTable<TData, TValue>({
       rating_max: "0.0",
     });
     setDropdownOpen(false);
-    router.push(pathname);
+    if (pathname) {
+      router.push(pathname);
+    }
   };
 
   const handleInputClick = (e: React.MouseEvent) => {
