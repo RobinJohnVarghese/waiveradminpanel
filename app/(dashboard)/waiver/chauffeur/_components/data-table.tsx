@@ -219,9 +219,11 @@ export function DataTable<TData, TValue>({
                 Filters
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-              <DropdownMenuGroup>
+            <DropdownMenuContent className="w-64">
+              <DropdownMenuLabel className="flex justify-between items-center">
+                Filter by
+              </DropdownMenuLabel>
+              <DropdownMenuGroup className="overflow-y-auto max-h-[50vh]">
                 <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                   <div className="w-full space-y-2">
                     <span className="text-sm text-muted-foreground">
@@ -393,16 +395,14 @@ export function DataTable<TData, TValue>({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <div className="flex flex-col gap-2 w-full">
-                  <Button onClick={applyFilters} className="w-full">
-                    Submit
-                  </Button>
-                  <Button onClick={clearFilters} variant="outline" className="w-full">
-                    Clear
-                  </Button>
-                </div>
-              </DropdownMenuItem>
+              <div className="p-2 flex gap-2">
+                <Button onClick={clearFilters} variant="outline" className="w-full">
+                  Clear
+                </Button>
+                <Button onClick={applyFilters} className="w-full">
+                  Submit
+                </Button>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
