@@ -1,0 +1,233 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { getHomeStats } from "@/actions/get-home-stats";
+import { cn } from "@/lib/utils";
+
+export default function DashboardStatsClient({ userPermissions }: { userPermissions: any }) {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        if (userPermissions?.dashboard && userPermissions?.users) {
+          const data = await getHomeStats();
+          setStats(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch home stats", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, [userPermissions]);
+
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full text-center text-red-500 py-10">
+        Failed to load statistics. Please try again.
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Users Statistics */}
+      <Section title="Users Statistics">
+        <StatGrid>
+          <StatTile
+            stat={stats?.user?.total}
+            label="Total Users"
+            icon="/images/assets/total-users.png"
+          />
+          <StatTile
+            stat={stats?.user?.active}
+            label="Active Users"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={stats?.user?.blocked}
+            label="Blocked Users"
+            icon="/images/assets/blocked.png"
+          />
+        </StatGrid>
+      </Section>
+
+      {/* Drivers Statistics */}
+      <Section title="Drivers Statistics">
+        <StatGrid>
+          <StatTile
+            stat={stats?.driver?.total}
+            label="Total Drivers"
+            icon="/images/assets/total-drivers.png"
+          />
+          <StatTile
+            stat={stats?.driver?.active}
+            label="Active Drivers"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={stats?.driver?.blocked}
+            label="Blocked Drivers"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.driver?.pending}
+            label="Pending Drivers"
+            icon="/images/assets/pending.png"
+          />
+          <StatTile
+            stat={stats?.driver?.rejected}
+            label="Rejected Drivers"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.driver?.earning}
+            label="Drivers Earned"
+            icon="/images/assets/earnings.png"
+          />
+        </StatGrid>
+      </Section>
+
+      {/* Chauffeurs Statistics */}
+      <Section title="Chauffeurs Statistics">
+        <StatGrid>
+          <StatTile
+            stat={stats?.chauffeur?.total}
+            label="Total Chauffeurs"
+            icon="/images/assets/total-chauffeurs.png"
+          />
+          <StatTile
+            stat={stats?.chauffeur?.active}
+            label="Active Chauffeurs"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={stats?.chauffeur?.blocked}
+            label="Blocked Chauffeurs"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.chauffeur?.pending}
+            label="Pending Chauffeurs"
+            icon="/images/assets/pending.png"
+          />
+          <StatTile
+            stat={stats?.chauffeur?.rejected}
+            label="Rejected Chauffeurs"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.chauffeur?.earning}
+            label="Chauffeurs Earned"
+            icon="/images/assets/earnings.png"
+          />
+        </StatGrid>
+      </Section>
+
+      {/* Fleets Statistics */}
+      <Section title="Fleets Statistics" customClass={true}>
+        <StatGrid>
+          <StatTile
+            stat={stats?.fleet?.total}
+            label="Total Fleets"
+            icon="/images/assets/total-fleet.png"
+          />
+          <StatTile
+            stat={stats?.fleet?.active}
+            label="Active Fleets"
+            icon="/images/assets/active.png"
+          />
+          <StatTile
+            stat={stats?.fleet?.blocked}
+            label="Blocked Fleets"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.fleet?.pending}
+            label="Pending Fleets"
+            icon="/images/assets/pending.png"
+          />
+          <StatTile
+            stat={stats?.fleet?.rejected}
+            label="Rejected Fleets"
+            icon="/images/assets/blocked.png"
+          />
+          <StatTile
+            stat={stats?.fleet?.earning}
+            label="Fleets Earned"
+            icon="/images/assets/earnings.png"
+          />
+        </StatGrid>
+      </Section>
+    </>
+  );
+}
+
+const Section = ({
+  children,
+  title,
+  customClass = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  customClass?: boolean;
+}) => {
+  return (
+    <div
+      className={cn("border rounded-lg shadow-md bg-white w-full p-4 sm:p-6", {
+        "!mb-20 md:mb-0": customClass,
+      })}
+    >
+      <h4 className="text-base sm:text-[16px] md:text-lg font-semibold text-gray-700 mb-3">
+        {title}
+      </h4>
+      {children}
+    </div>
+  );
+};
+
+const StatGrid = ({ children }: { children: React.ReactNode }) => (
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+    {children}
+  </div>
+);
+
+const StatTile = ({
+  stat,
+  label,
+  icon,
+}: {
+  stat: number;
+  label: string;
+  icon: string;
+}) => (
+  <div className="bg-gradient-to-r from-white to-gray-50 border rounded-md shadow-sm p-3 md:p-4 flex items-center space-x-3 hover:shadow-md transition-shadow">
+    <Image
+      src={icon}
+      alt={label}
+      width={40}
+      height={40}
+      className="rounded-full bg-gray-200 p-2 shadow-inner"
+    />
+    <div className="flex flex-col">
+      <h2 className="text-base sm:text-[16px] font-bold text-gray-800">
+        {stat ?? 0}
+      </h2>
+      <p className="text-xs sm:text-sm text-gray-600">{label}</p>
+    </div>
+  </div>
+);
