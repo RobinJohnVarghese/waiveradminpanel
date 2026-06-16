@@ -154,6 +154,7 @@ const SidebarLink = ({
 }) => {
   return (
     <Link
+      prefetch={false}
       href={link.href}
       className={`group transition-colors p-2 inline-block hover:bg-popover hover:text-primary text-muted-foreground text-xs hover:shadow rounded-md w-full${
         active ? " text-primary font-semibold" : ""
