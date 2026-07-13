@@ -1,0 +1,12 @@
+--- app/(dashboard)/_components/DashboardStatsClient.tsx
++++ app/(dashboard)/_components/DashboardStatsClient.tsx
+@@ -19,6 +19,9 @@
+           setStats(data);
+         }
+       } catch (err) {
++        if (err && typeof err === 'object' && 'digest' in err && (err as any).digest?.startsWith('NEXT_REDIRECT')) {
++          throw err;
++        }
+         console.error("Failed to fetch home stats", err);
+         setError(true);
+       } finally {

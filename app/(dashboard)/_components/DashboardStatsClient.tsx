@@ -18,6 +18,9 @@ export default function DashboardStatsClient({ userPermissions }: { userPermissi
           setStats(data);
         }
       } catch (err) {
+        if (err && typeof err === 'object' && 'digest' in err && (err as any).digest?.startsWith('NEXT_REDIRECT')) {
+          throw err;
+        }
         console.error("Failed to fetch home stats", err);
         setError(true);
       } finally {

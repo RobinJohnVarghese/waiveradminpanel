@@ -35,6 +35,9 @@ export const Client: React.FC<ClientProps> = ({ fetchType, showAnalytics = false
           if (analyticsData) setAnalytics(analyticsData);
         }
       } catch (err) {
+        if (err && typeof err === 'object' && 'digest' in err && (err as any).digest?.startsWith('NEXT_REDIRECT')) {
+          throw err;
+        }
         console.error("Failed to load bookings", err);
         setError(true);
       } finally {
