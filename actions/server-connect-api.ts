@@ -51,11 +51,10 @@ serverConnectAPI.interceptors.response.use(async function (response: any) {
     if (error && error.response) {
         const { data, status } = error.response;
         if ((data) && (status == '401')) {
-            // signOut({
-            //     callbackUrl: `${window.location.origin}/login`,
-            // });
             if (typeof window !== "undefined") {
-                window.location.replace('/login');
+                signOut({
+                    callbackUrl: `${window.location.origin}/login`,
+                });
             }
         } else if ((status === 500) && data) {
             return Promise.reject(data.message);
