@@ -44,7 +44,7 @@ export const columns: ColumnDef<Column>[] = [
     header: "Email",
   },
   {
-    accessorKey: "location",
+    accessorKey: "location_name",
     header: "Location",
   },
   {

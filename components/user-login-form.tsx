@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import axios from "axios";
@@ -35,6 +35,15 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const clearSession = searchParams?.get("clearSession") === "true";
+
+  React.useEffect(() => {
+    if (clearSession) {
+      signOut({ redirect: false });
+      toast.error("Session expired. Please log in again.");
+    }
+  }, [clearSession]);
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);

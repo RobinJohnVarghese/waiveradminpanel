@@ -11,24 +11,34 @@ export default function DashboardStatsClient({ userPermissions }: { userPermissi
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchStats() {
       try {
         if (userPermissions?.dashboard && userPermissions?.users) {
           const data = await getHomeStats();
-          setStats(data);
+          if (isMounted) {
+            setStats(data);
+          }
         }
       } catch (err) {
         if (err && typeof err === 'object' && 'digest' in err && (err as any).digest?.startsWith('NEXT_REDIRECT')) {
           throw err;
         }
         console.error("Failed to fetch home stats", err);
-        setError(true);
+        if (isMounted) {
+          setError(true);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
     fetchStats();
-  }, [userPermissions]);
+    return () => {
+      isMounted = false;
+    };
+  }, [userPermissions?.dashboard, userPermissions?.users]);
 
   if (loading) {
     return (

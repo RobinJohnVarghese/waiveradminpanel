@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 
@@ -6,8 +7,8 @@ import { authOptions } from "@/lib/auth";
 
 export async function getRatings(review_type: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -21,7 +22,9 @@ export async function getRatings(review_type: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -29,8 +32,8 @@ export async function getRatings(review_type: string) {
 
 export async function getCabRideCostDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -44,7 +47,9 @@ export async function getCabRideCostDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -52,8 +57,8 @@ export async function getCabRideCostDetails(id: string) {
 
 export async function getVehicleTypes() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -67,7 +72,9 @@ export async function getVehicleTypes() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -75,8 +82,8 @@ export async function getVehicleTypes() {
 
 export async function getLocations() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -90,7 +97,9 @@ export async function getLocations() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 
@@ -9,8 +10,8 @@ import { apiEndpoints } from "./api-endpoints";
 
 export async function getLocationDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -24,15 +25,17 @@ export async function getLocationDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
 }
 export async function getLiveLocation() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response: any = await fetchAPIData({

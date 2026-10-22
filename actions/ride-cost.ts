@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 
@@ -7,8 +8,8 @@ import { authOptions } from "@/lib/auth";
 
 export async function getCabRideCosts() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
   const response = axios({
     url: `${env.BACKEND_URL}/api/v1/staff/get-cab-ride-costs/`,
@@ -21,7 +22,9 @@ export async function getCabRideCosts() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log('error',error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -29,8 +32,8 @@ export async function getCabRideCosts() {
 
 export async function getChauffeurRideCosts() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -44,7 +47,9 @@ export async function getChauffeurRideCosts() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -52,8 +57,8 @@ export async function getChauffeurRideCosts() {
 
 export async function getChauffeurRideCostDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -67,7 +72,9 @@ export async function getChauffeurRideCostDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -75,8 +82,8 @@ export async function getChauffeurRideCostDetails(id: string) {
 
 export async function getCabRideCostDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -90,7 +97,9 @@ export async function getCabRideCostDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -98,8 +107,8 @@ export async function getCabRideCostDetails(id: string) {
 
 export async function getVehicleTypes() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -113,7 +122,9 @@ export async function getVehicleTypes() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -121,8 +132,8 @@ export async function getVehicleTypes() {
 
 export async function getWorkExperiences() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -136,7 +147,9 @@ export async function getWorkExperiences() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -144,8 +157,8 @@ export async function getWorkExperiences() {
 
 export async function getTransmissionTypes() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -159,7 +172,9 @@ export async function getTransmissionTypes() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -167,8 +182,8 @@ export async function getTransmissionTypes() {
 
 export async function getLocations() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -182,7 +197,9 @@ export async function getLocations() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -190,8 +207,8 @@ export async function getLocations() {
 
 export async function getStates() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -205,7 +222,9 @@ export async function getStates() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -213,8 +232,8 @@ export async function getStates() {
 
 export async function getDistricts() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -228,7 +247,9 @@ export async function getDistricts() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -236,8 +257,8 @@ export async function getDistricts() {
 
 export async function getBanks() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -251,7 +272,9 @@ export async function getBanks() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -259,8 +282,8 @@ export async function getBanks() {
 
 export async function getUserRideHistory(id: string, user_type?: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -274,7 +297,9 @@ export async function getUserRideHistory(id: string, user_type?: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -282,8 +307,8 @@ export async function getUserRideHistory(id: string, user_type?: string) {
 
 export async function getUserRideAnalytics(id: string, user_type?: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -297,7 +322,9 @@ export async function getUserRideAnalytics(id: string, user_type?: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -305,8 +332,8 @@ export async function getUserRideAnalytics(id: string, user_type?: string) {
 
 export async function getDriverRideHistory(id: string, user_type?: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -320,7 +347,9 @@ export async function getDriverRideHistory(id: string, user_type?: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -328,8 +357,8 @@ export async function getDriverRideHistory(id: string, user_type?: string) {
 
 export async function getDriverRideAnalytics(id: string, user_type?: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -343,7 +372,9 @@ export async function getDriverRideAnalytics(id: string, user_type?: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -351,8 +382,8 @@ export async function getDriverRideAnalytics(id: string, user_type?: string) {
 
 export async function getRideDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -366,7 +397,9 @@ export async function getRideDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -374,8 +407,8 @@ export async function getRideDetails(id: string) {
 
 export async function getVehicles(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -389,7 +422,9 @@ export async function getVehicles(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -397,8 +432,8 @@ export async function getVehicles(id: string) {
 
 export async function getVehicleDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -412,7 +447,9 @@ export async function getVehicleDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -420,8 +457,8 @@ export async function getVehicleDetails(id: string) {
 
 export async function getWaiverReport() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -435,7 +472,9 @@ export async function getWaiverReport() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -443,8 +482,8 @@ export async function getWaiverReport() {
 
 export async function getPushNotificationReceiverTypes() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -458,7 +497,9 @@ export async function getPushNotificationReceiverTypes() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -466,8 +507,8 @@ export async function getPushNotificationReceiverTypes() {
 
 export async function getNotifcations() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -481,7 +522,9 @@ export async function getNotifcations() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -489,8 +532,8 @@ export async function getNotifcations() {
 
 export async function getNotifcation(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -504,7 +547,9 @@ export async function getNotifcation(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -512,8 +557,8 @@ export async function getNotifcation(id: string) {
 
 export async function getPromoReceiverTypes() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -527,7 +572,9 @@ export async function getPromoReceiverTypes() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -535,8 +582,8 @@ export async function getPromoReceiverTypes() {
 
 export async function getPromos() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -550,7 +597,9 @@ export async function getPromos() {
       return response.data.data;
     })
     .catch((error) => {
-      console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -558,8 +607,8 @@ export async function getPromos() {
 
 export async function getPromo(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -573,7 +622,9 @@ export async function getPromo(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -581,8 +632,8 @@ export async function getPromo(id: string) {
 
 export async function getAllBookings() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -596,7 +647,9 @@ export async function getAllBookings() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log('abcd',error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -604,8 +657,8 @@ export async function getAllBookings() {
 
 export async function getBookings(ride_status: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -619,7 +672,9 @@ export async function getBookings(ride_status: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log('ssss',error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -627,8 +682,8 @@ export async function getBookings(ride_status: string) {
 
 export async function getBookingsAnalytics() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -642,7 +697,9 @@ export async function getBookingsAnalytics() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -650,8 +707,8 @@ export async function getBookingsAnalytics() {
 
 export async function getRideOptions() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -665,7 +722,9 @@ export async function getRideOptions() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -673,8 +732,8 @@ export async function getRideOptions() {
 
 export async function getBookingDetails(booking_id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -688,7 +747,9 @@ export async function getBookingDetails(booking_id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -696,8 +757,8 @@ export async function getBookingDetails(booking_id: string) {
 
 export async function getDriversForBooking(booking_id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -711,7 +772,9 @@ export async function getDriversForBooking(booking_id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -719,8 +782,8 @@ export async function getDriversForBooking(booking_id: string) {
 
 export async function getBookingPayment(booking_id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -734,7 +797,9 @@ export async function getBookingPayment(booking_id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;

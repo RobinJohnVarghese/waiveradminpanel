@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filterValues, setFilterValues] = useState({
     status: null as string | null, // null means no filter applied
+    gender: null as string | null,
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -112,6 +113,15 @@ export function DataTable<TData, TValue>({
         value,
       }));
     setColumnFilters(filters);
+    setDropdownOpen(false);
+  };
+
+  const clearFilters = () => {
+    setFilterValues({
+      status: null,
+      gender: null,
+    });
+    setColumnFilters([]);
     setDropdownOpen(false);
   };
 
@@ -230,13 +240,61 @@ export function DataTable<TData, TValue>({
                       </div>
                     </div>
                   </div>
+                  <div className="w-full space-y-2 mt-4">
+                    <span className="text-sm text-muted-foreground">
+                      Gender
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="gender-male"
+                          name="gender"
+                          value="M"
+                          checked={filterValues.gender === "M"}
+                          onChange={(e) => handleFilterChange("gender", "M")}
+                          onClick={handleInputClick}
+                        />
+                        <label htmlFor="gender-male">Male</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="gender-female"
+                          name="gender"
+                          value="F"
+                          checked={filterValues.gender === "F"}
+                          onChange={(e) => handleFilterChange("gender", "F")}
+                          onClick={handleInputClick}
+                        />
+                        <label htmlFor="gender-female">Female</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="gender-other"
+                          name="gender"
+                          value="O"
+                          checked={filterValues.gender === "O"}
+                          onChange={(e) => handleFilterChange("gender", "O")}
+                          onClick={handleInputClick}
+                        />
+                        <label htmlFor="gender-other">Other</label>
+                      </div>
+                    </div>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <Button onClick={applyFilters} className="w-full">
-                  Submit
-                </Button>
+                <div className="flex w-full space-x-2">
+                  <Button variant="outline" onClick={clearFilters} className="w-full">
+                    Clear
+                  </Button>
+                  <Button onClick={applyFilters} className="w-full">
+                    Submit
+                  </Button>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

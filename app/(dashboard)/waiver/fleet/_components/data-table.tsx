@@ -39,6 +39,16 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  const [globalFilter, setGlobalFilter] = useState("");
+  const searchColumns = ["fullname", "phone", "email"];
+
+  const globalFilterFn = (row: any, columnIds: any, filterValue: any) => {
+    return searchColumns.some((colId) => {
+      const rowValue = row.getValue(colId);
+      return String(rowValue ?? "").toLowerCase().includes(filterValue.toLowerCase());
+    });
+  };
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -51,8 +61,11 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: globalFilterFn,
     state: {
       columnFilters,
+      globalFilter,
       pagination,
     },
     onPaginationChange: setPagination,
@@ -93,10 +106,8 @@ export function DataTable<TData, TValue>({
         </div>
         <Input
           placeholder="Search"
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
+          value={globalFilter ?? ""}
+          onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
       </div>

@@ -141,6 +141,10 @@ export const CostForm = ({ initialData, vehicleTypes }: Props) => {
     formData.append("odt_after_max_km", String(data.odt_after_max_km));
 
     if (initialData?.id) {
+      formData.append("id", initialData.id);
+    }
+
+    if (initialData?.id) {
       await axios
         .put(
           `${process.env.BACKEND_URL}/api/v1/staff/chauffeur-ride-cost-management/`,

@@ -7,14 +7,26 @@ export default withAuth(
     const token = await getToken({ req });
     const isAuth = !!token;
     const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+    const hasClearSession = req.nextUrl.searchParams.get("clearSession") === "true";
 
     if (isAuthPage) {
-      if (req.nextUrl.searchParams.get("clearSession")) {
-        const response = NextResponse.redirect(new URL("/login", req.url));
-        response.cookies.delete("next-auth.session-token");
-        response.cookies.delete("__Secure-next-auth.session-token");
+      if (hasClearSession) {
+        // Render login page directly without redirecting to avoid infinite loops.
+        // Cleanly wipe all next-auth session cookies (including chunked cookies).
+        const response = NextResponse.next();
+        for (const cookie of req.cookies.getAll()) {
+          if (cookie.name.includes("next-auth")) {
+            response.cookies.delete(cookie.name);
+            response.cookies.set(cookie.name, "", {
+              maxAge: 0,
+              path: "/",
+              expires: new Date(0),
+            });
+          }
+        }
         return response;
       }
+
       if (isAuth) {
         return NextResponse.redirect(new URL("/", req.url));
       }

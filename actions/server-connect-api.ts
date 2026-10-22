@@ -1,68 +1,41 @@
-
 import axios from "axios";
-import { useRouter } from 'next/navigation'
 import { env } from "@/env.mjs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { signOut } from "next-auth/react";
 
 const serverConnectAPI = axios.create({
-    // baseURL: baseURL,
     baseURL: `${env.BACKEND_URL?.replace(/\/$/, "")}/api/v1/staff/`,
     headers: { "Content-Type": "multipart/form-data", Accept: "*/*" },
 });
 
 serverConnectAPI.interceptors.request.use(async function (config: any) {
     const session = await getServerSession(authOptions);
-    if (!session) {
-        console.log("No user");
+    if (!session?.accessToken) {
+        return Promise.reject(new Error("UNAUTHORIZED_NO_TOKEN"));
     }
-    config.headers["Authorization"] = `Bearer ${session?.accessToken}`;
+    config.headers["Authorization"] = `Bearer ${session.accessToken}`;
     return config;
 }, function (error) {
-
     return Promise.reject(error);
 });
 
-serverConnectAPI.interceptors.response.use(async function (response: any) {
-    if ((response) && (response.status === 200)) {
+serverConnectAPI.interceptors.response.use(function (response: any) {
+    if (response && response.status === 200) {
         if (response.data) {
-            if (response.data.data) {
-                return response.data.data;
-            } else {
-                return response.data;
-            }
-        } else {
-            return response;
+            return response.data.data !== undefined ? response.data.data : response.data;
         }
-    } else if (response.status === 201) {
-        if (typeof window !== "undefined") {
-            signOut({
-                callbackUrl: `${window.location.origin}/login`,
-            });
-            window.location.replace('/login');
-        }
-    } else {
-        if (response.status === 201) {
-
-        }
+        return response;
     }
+    return response;
 }, function (error) {
     if (error && error.response) {
         const { data, status } = error.response;
-        if ((data) && (status == '401')) {
-            if (typeof window !== "undefined") {
-                signOut({
-                    callbackUrl: `${window.location.origin}/login`,
-                });
-            }
-        } else if ((status === 500) && data) {
-            return Promise.reject(data.message);
-        } else {
-            return Promise.reject(error.message);
+        if (status === 401 || status === "401") {
+            return Promise.reject(new Error("UNAUTHORIZED_EXPIRED_TOKEN"));
         }
-    } else {
-        return Promise.reject(error.message);
+        if (status === 500 && data) {
+            return Promise.reject(new Error(typeof data === "string" ? data : data.message || "Internal server error"));
+        }
     }
     return Promise.reject(error);
 });

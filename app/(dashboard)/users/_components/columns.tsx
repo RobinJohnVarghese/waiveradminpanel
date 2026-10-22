@@ -10,8 +10,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { DeleteUser } from "./delete";
 import { ChangeUserStatus } from "./change-user-status";
 import Link from "next/link";
-import { screenWidth } from "@/utils/helper";
-
 // import { CellAction } from "./cell-action"
 
 export type Column = {
@@ -35,26 +33,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "fullname",
     header: "User Name",
   },
-  ...(screenWidth < 900 ? [{
-    header: "Action",
-    cell: ({ row }: any) => (
-      <div className="flex w-fit flex-row space-x-2">
-        {/* <ChangeUserStatus
-          profileId={row.original.id}
-          status={row.original.status}
-          name={row.original.fullname}
-        /> */}
-        <Link
-          href={`/users/${row.original.id}`}
-          className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
-        >
-          {" "}
-          <Pencil className="h-4 w-4" />
-        </Link>
-        <DeleteUser userId={row.original.id} />
-      </div>
-    ),
-  }] : []),
+
   {
     accessorKey: "phone",
     header: "Phone",
@@ -62,6 +41,26 @@ export const columns: ColumnDef<Column>[] = [
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "gender",
+    header: "Gender",
+    filterFn: 'equals',
+    cell: ({ row }) => {
+      const gender = row.getValue("gender");
+      if (gender === "M") return "Male";
+      if (gender === "F") return "Female";
+      if (gender === "O") return "Other";
+      return gender || "N/A";
+    }
+  },
+  {
+    accessorKey: "own_referral_code",
+    header: "Their Own Referral ID",
+  },
+  {
+    accessorKey: "referral_code_used",
+    header: "Referral ID Used",
   },
   {
     accessorKey: "location",
@@ -89,15 +88,10 @@ export const columns: ColumnDef<Column>[] = [
       );
     },
   },
-  ...(screenWidth > 900 ? [{
+  {
     header: "Action",
     cell: ({ row }: any) => (
       <div className="flex w-fit flex-row space-x-2">
-        {/* <ChangeUserStatus
-          profileId={row.original.id}
-          status={row.original.status}
-          name={row.original.fullname}
-        /> */}
         <Link
           href={`/users/${row.original.id}`}
           className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
@@ -108,5 +102,5 @@ export const columns: ColumnDef<Column>[] = [
         <DeleteUser userId={row.original.id} />
       </div>
     ),
-  }] : []),
+  },
 ];

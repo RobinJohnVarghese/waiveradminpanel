@@ -16,9 +16,8 @@ export async function getUsers(
   maxRating?: string
 ) {
   const session = await getServerSession(authOptions);
-
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const queryParams = new URLSearchParams();
@@ -55,8 +54,8 @@ export async function getUsers(
 
 export async function getUserDetails(id: string, type?: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    // console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -78,11 +77,8 @@ export async function getUserDetails(id: string, type?: string) {
 
 export async function getInternalUsers() {
   const session = await getServerSession(authOptions);
-
-  console.log({ session });
-
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -96,7 +92,9 @@ export async function getInternalUsers() {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
@@ -104,8 +102,8 @@ export async function getInternalUsers() {
 
 export async function getInternalUserDetails(id: string) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    console.log("No user");
+  if (!session?.accessToken) {
+    redirect("/login?clearSession=true");
   }
 
   const response = axios({
@@ -119,7 +117,9 @@ export async function getInternalUserDetails(id: string) {
       return response.data.data;
     })
     .catch((error) => {
-      // console.log(error);
+      if (error?.response?.status === 401) {
+        redirect("/login?clearSession=true");
+      }
     });
 
   return response;
