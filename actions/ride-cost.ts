@@ -14,7 +14,7 @@ async function staffGet<T = any>(endpoint: string, fallback: any = undefined): P
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
       },
-      timeout: 15000,
+      timeout: 8000,
     });
     return (res.data?.data ?? fallback) as T;
   } catch (error) {

@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 const serverConnectAPI = axios.create({
     baseURL: `${env.BACKEND_URL}/api/v1/staff/`,
     headers: { "Content-Type": "multipart/form-data", Accept: "*/*" },
-    timeout: 15000,
+    timeout: 8000,
 });
 
 serverConnectAPI.interceptors.request.use(async function (config: any) {
