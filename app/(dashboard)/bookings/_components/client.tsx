@@ -8,45 +8,61 @@ import { getAllBookings, getBookings, getBookingsAnalytics } from "@/actions/rid
 interface ClientProps {
   fetchType: "ALL" | "ONG" | "PEN" | "SCD" | "CAN";
   showAnalytics?: boolean;
+  initialData?: Column[];
+  initialAnalytics?: any;
 }
 
-export const Client: React.FC<ClientProps> = ({ fetchType, showAnalytics = false }) => {
-  const [data, setData] = useState<Column[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+export const Client: React.FC<ClientProps> = ({
+  fetchType,
+  showAnalytics = false,
+  initialData,
+  initialAnalytics,
+}) => {
+  const [data, setData] = useState<Column[]>(initialData || []);
+  const [analytics, setAnalytics] = useState<any>(initialAnalytics || null);
+  const [loading, setLoading] = useState(initialData !== undefined ? false : true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (initialData !== undefined) {
+      return;
+    }
+
+    let isMounted = true;
     async function loadData() {
       try {
-        let bookingsData;
-        if (fetchType === "ALL") {
-          bookingsData = await getAllBookings();
-        } else {
-          bookingsData = await getBookings(fetchType);
-        }
-        
-        if (bookingsData) {
-          setData(bookingsData);
-        }
+        setLoading(true);
 
-        if (showAnalytics) {
-          const analyticsData = await getBookingsAnalytics();
-          if (analyticsData) setAnalytics(analyticsData);
-        }
+        const bookingsPromise = (fetchType === "ALL" ? getAllBookings() : getBookings(fetchType))
+          .then((bData) => {
+            if (isMounted && bData) setData(bData);
+            return bData;
+          });
+
+        const analyticsPromise = showAnalytics
+          ? getBookingsAnalytics().then((aData) => {
+              if (isMounted && aData) setAnalytics(aData);
+              return aData;
+            })
+          : Promise.resolve(null);
+
+        await Promise.all([bookingsPromise, analyticsPromise]);
       } catch (err) {
         if (err && typeof err === 'object' && 'digest' in err && (err as any).digest?.startsWith('NEXT_REDIRECT')) {
           throw err;
         }
         console.error("Failed to load bookings", err);
-        setError(true);
+        if (isMounted) setError(true);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     loadData();
-  }, [fetchType, showAnalytics]);
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchType, showAnalytics, initialData]);
 
   if (loading) {
     return (
